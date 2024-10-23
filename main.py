@@ -1,11 +1,11 @@
-import json
+import csv
 import aiogram
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 from aiogram.types import Message, FSInputFile, InputMediaPhoto
 from aiogram import F
 
-from dataset import Dataset, Decomposition
+from dataset import Decomposition
 from model import Model
 
 BOT_TOKEN = '7348573908:AAGCRzkrpRYPmFocrRBTnXVkes_rZ_-HspI'
@@ -16,13 +16,12 @@ dp = Dispatcher()
 model = Model()
 embeddings = []
 filelist = []
-with open('dataset', 'r') as file:
-    line = json.load(file)
+with open('dataset', 'r') as csv_file:
+    rows = csv.DictReader(csv_file, delimiter=',')
 
-    for image in line['filelist']:
-        embeddings.append(model.extract_features(image))
-        filelist.append(image)
-
+    for row in rows:
+        filelist.append(row['photo_path'])
+        embeddings.append(model.extract_features(row['photo_path']))
 
 decomposition = Decomposition(embeddings)
 pca_embeddings = decomposition.do_decomposition(embeddings)

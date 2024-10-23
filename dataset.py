@@ -1,31 +1,24 @@
+import csv
 import os
-import json
-import numpy as np
 from sklearn.decomposition import PCA
-from model import Model
+
 class Dataset:
     def __init__(self):
         pass
 
     def create_dataset_features(self, data_dir, output_file):
-        embeddings = {}
-        image_ids = []
-        filelist = []
-        for animal_name in os.listdir(data_dir):
-            animal_path = os.path.join(data_dir, animal_name)
-            if os.path.isdir(animal_path):
-                embeddings[animal_name] = []
-                for img_name in os.listdir(animal_path):
-                    img_path = os.path.join(animal_path, img_name)
-                    if img_path.endswith(('.jpg', '.jpeg', '.png')):
-                        # embedding = Model().extract_features(img_path)
-                        # embeddings[animal_name].append(embedding)
-                        filelist.append(img_path)
-                        image_ids.append(img_name)
+        with open(output_file, 'w', encoding='utf-8', newline='') as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=['name', 'photo_path'])
+            writer.writeheader()
 
-        with open(output_file, 'w') as f:
-            json.dump({'image_ids': image_ids, 'filelist': filelist}, f)
+            for animal_name in os.listdir(data_dir):
+                animal_path = os.path.join(data_dir, animal_name)
+                if os.path.isdir(animal_path):
 
+                    for img_name in os.listdir(animal_path):
+                        img_path = os.path.join(animal_path, img_name)
+                        if img_path.endswith(('.jpg', '.jpeg', '.png')):
+                            writer.writerow({'name': animal_name, 'photo_path': img_path})
 
 class Decomposition:
     def __init__(self, embeddings):
