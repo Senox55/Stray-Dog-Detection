@@ -17,8 +17,7 @@ class PostgresConnection:
 
         self.session = Session(bind=self.__engine)
 
-    def create_tables(self):
-        from SQLAlchemy_table_classes import Base
+    def create_tables(self, Base):
         Base.metadata.create_all(bind=self.__engine)
 
     def get_data_from_table(self, table_class=None, table_name: str = None, columns: list[str] | None = None) -> list:
