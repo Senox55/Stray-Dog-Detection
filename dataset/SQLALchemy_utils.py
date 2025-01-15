@@ -63,7 +63,7 @@ class PostgresConnection:
                              data: list[list[str]],
                              columns: list[str] | None = None,
                              table_class=None,
-                             table_name: str = None):
+                             table_name: str = None) -> list:
         """
         Insert data into a specific table using ORM classes or a table name.
         Args:
@@ -96,11 +96,16 @@ class PostgresConnection:
         if invalid_columns:
             raise ValueError(f"Invalid columns {invalid_columns} for table {table_obj.name}")
 
+        inserted_primary_keys = []
         for row in data:
             insert_data = {key: value for key, value in zip(columns, row)}
-            self.session.execute(table_obj.insert().values(**insert_data))
+            result = self.session.execute(table_obj.insert().values(**insert_data))
+
+            inserted_primary_keys.extend(result.inserted_primary_key)
 
         self.session.commit()
+
+        return inserted_primary_keys
 
     def get_tables_list(self) -> list[str]:
         """
@@ -148,7 +153,8 @@ class PostgresConnection:
 
         table_names_from_classes = [t_class.__tablename__ for t_class in table_classes]
         if table_names_from_classes:
-            table_names = set(table_names.extend(table_names_from_classes))
+            table_names.extend(table_names_from_classes)
+            table_names = set(table_names)
 
         if not table_names:
             ValueError(f"Table names or table classes must be provided")

@@ -6,7 +6,7 @@ Base = declarative_base()
 
 class Video(Base):
     __tablename__ = 'video'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     path = Column(String, nullable=False)
 
     frame = relationship("Frame", back_populates="video")
@@ -14,8 +14,8 @@ class Video(Base):
 
 class Frame(Base):
     __tablename__ = 'frame'
-    id = Column(Integer, primary_key=True)
-    video_id = Column(Integer, ForeignKey('video.id'), nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    video_id = Column(Integer, ForeignKey('video.id', ondelete='CASCADE'), nullable=False)
     frame_num = Column(Integer, nullable=False)
 
     video = relationship("Video", back_populates="frame")
@@ -24,8 +24,8 @@ class Frame(Base):
 
 class Label(Base):
     __tablename__ = 'label'
-    id = Column(Integer, primary_key=True)
-    frame_id = Column(Integer, ForeignKey('frame.id'), nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    frame_id = Column(Integer, ForeignKey('frame.id', ondelete='CASCADE'), nullable=False)
     x = Column(Integer, nullable=False)
     y = Column(Integer, nullable=False)
     width = Column(Integer, nullable=False)
